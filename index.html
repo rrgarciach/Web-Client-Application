@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Orders</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
+</head>
+<body>
+	<div data-role="page">
+
+	<div data-role="header">
+		<!-- <h1>Page Title</h1> -->
+		<div data-role="navbar" data-iconpos="bottom">
+	        <ul>
+	            <li><a href="#" data-icon="grid">Summary</a></li>
+	            <li><a href="#" data-icon="star" class="ui-btn-active">Favs</a></li>
+	            <li><a href="#" data-icon="gear">Setup</a></li>
+	        </ul>
+	    </div><!-- /navbar -->
+	</div><!-- /header -->
+
+	<div role="main" class="ui-content">
+
+		<div id="product-list-div">
+			<ul data-role="listview" data-inset="true" id="product-list-ul">
+<!-- 			    <li>
+			    	<a href="#">
+				        <img src="http://www.truperenlinea.com/reng/info/fichas/img/ch/22606.jpg">
+				        <h2>Broken Bells</h2>
+				        <p>Broken Bells</p>
+			    	</a>
+			    </li> -->
+			</ul>
+		</div>
+
+		<form action="#" id="actionForm">
+			<input type="hidden" name="action" value='getOrder' placeholder="action...">
+			<input type="hidden" name="option" value="com_serviceorders">
+			<input type="submit" value="Ver Orden">
+		</form>
+		<!-- <button id="send">Send</button> -->
+		<p>
+			<script>
+			$("#actionForm").submit(function( event ) {
+				event.preventDefault();
+				$('#product-list-ul').empty();
+
+				var act = $(this).find("input[name='action']").val();
+				var option = $(this).find("input[name='option']").val();
+
+				var url = "http://localhost:8080/joomla/index.php";
+
+				$.getJSON(
+					url, 
+					{ 
+						option: "com_serviceorders", 
+						action: act 
+					},
+					function( data ) {
+						var items = [];
+						var products = data.data.products;
+						$.each( products, function( key, val ) {
+						var row = $('<li></li>');
+						var link = '<a href="#"></a>';
+						var image = '<img src="http://www.truperenlinea.com/reng/info/fichas/img/ch/' + products[key].sku + '.jpg">';
+						var h2 = '<h2>' + products[key].description + '</h2>';
+						var p = '<p>$ ' + products[key].price + ' MXN</p>';
+						link = $(link).append(image).append(h2).append(p);
+						row = $(row).append(link);
+						$('#product-list-ul').append(row);
+						// $('#product-list-ul').trigger('create');
+						$('#product-list-ul').listview('refresh');
+						});
+						
+					});
+
+				// var posting = $.post( url, 
+				// 	{ option: "com_serviceorders", 
+				// 	action: act } );
+
+				// posting.success(function( data ) {
+				// 	// var response = $( data ).find("#data");
+				// 	// $("#response").empty().append(data);
+				// 	$products = data;
+				// 	// $.each($products, function(k,v){
+				// 	// 	$( '#product-list-ul' ).append('<li id="'+k+'"></li>').text(v);
+				// 	// });
+				// });
+
+				// posting.fail(function() {
+				// 	alert( "error" );
+				// });
+
+			});
+
+			// $("button").click(function(){
+			// 	alert('click');
+			// 	$.ajax({
+			// 		type: "POST", 
+			// 		url: "http://localhost:8080/joomla/index.php", 
+			// 		data: { option: "com_serviceorders", action: "getProduct" },
+			// 		datatype: "jsonp",
+			// 		crossDomain: true
+			// 	}).done(function( data ) {
+			// 		alert('posting');
+			// 		$("#response").empty().append(data);
+			// 	});
+			// });
+
+			
+
+				 
+			// function mycallback(data)
+			// {
+			//     alert("Here: "+data.name);
+			// }
+			// $("button").click(function(){
+			// 	$.ajax({
+			// 	    type: "POST", 
+			// 		url: "http://localhost:8080/joomla/index.php", 
+			// 		data: { option: "com_serviceorders", action: "getProduct" },
+			// 	    dataType:"jsonp",
+			//         jsonp:"mycallback",
+			//         success:function(data)
+			//         {
+			//             alert("Name:"+data.name+"nage:"+data.age+"nlocation:"+data.location);
+			//         }
+			// 	});
+			// });
+			</script>
+		</p>
+	</div><!-- /content -->
+
+	<div id="response">das</div>
+
+	<div data-role="footer">
+		<h4>Page Footer</h4>
+	</div><!-- /footer -->
+</div><!-- /page -->
+</div>
+</body>
+</html>
