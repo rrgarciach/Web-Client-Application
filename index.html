@@ -12,69 +12,89 @@
 	<div data-role="page">
 
 	<div data-role="header">
-		<!-- <h1>Page Title</h1> -->
+		<h1>Search Orders</h1>
 		<div data-role="navbar" data-iconpos="bottom">
-	        <ul>
+	        <!-- <ul>
 	            <li><a href="#" data-icon="grid">Summary</a></li>
 	            <li><a href="#" data-icon="star" class="ui-btn-active">Favs</a></li>
 	            <li><a href="#" data-icon="gear">Setup</a></li>
-	        </ul>
+	        </ul> -->
 	    </div><!-- /navbar -->
 	</div><!-- /header -->
 
 	<div role="main" class="ui-content">
+		<div id="order-data">
+			<h2>Order ID: <span id="order-id"></span>&emsp; Folio: <span id="order-folio"></span></h2>
+			<h3>Customer: <span id="order-customer"></span>&emsp; Seller: <span id="order-seller"></span></h3>
+			<h3>Order date: <span id="order-date"></span></h3>
+		</div>
 
 		<div id="product-list-div">
 			<ul data-role="listview" data-inset="true" id="product-list-ul">
-<!-- 			    <li>
-			    	<a href="#">
-				        <img src="http://www.truperenlinea.com/reng/info/fichas/img/ch/22606.jpg">
-				        <h2>Broken Bells</h2>
-				        <p>Broken Bells</p>
-			    	</a>
-			    </li> -->
 			</ul>
 		</div>
 
 		<form action="#" id="actionForm">
-			<input type="hidden" name="action" value='getOrder' placeholder="action...">
+			<input type="text" name="id_order" value='1' placeholder="action...">
+			<input type="hidden" name="action" value="getOrderById">
 			<input type="hidden" name="option" value="com_serviceorders">
-			<input type="submit" value="Ver Orden">
+			<input type="submit" value="Search">
 		</form>
 		<!-- <button id="send">Send</button> -->
 		<p>
 			<script>
+			$( document ).ready(function() {
+				$('#order-data').hide();
+			});
+			// jQuery function to manage the submit functionality.
 			$("#actionForm").submit(function( event ) {
-				event.preventDefault();
-				$('#product-list-ul').empty();
+				event.preventDefault(); // this is to prevent that some browser trigger stuff we don't want.
+        		$('#product-list-ul').empty(); // flush the product list if there were some form a past search.
+        		$('#order-data').hide();
+				$("#order-id").empty();
+				$("#order-folio").empty();
+				$("#order-customer").empty();
+				$("#order-seller").empty();
+				$("#order-date").empty();
 
-				var act = $(this).find("input[name='action']").val();
-				var option = $(this).find("input[name='option']").val();
+				var idOrder = $(this).find("input[name='id_order']").val(); // grab the order ID value to search for
+		        var inputOption = $(this).find("input[name='option']").val(); // grab the option value.
+		        var inputAction = $(this).find("input[name='action']").val(); // grab the action value.
 
 				var url = "http://localhost:8080/joomla/index.php";
+				// var url = "YOUR_JOOMLA_URL/index.php"; // the URL where we will be posting (your Joomla's application address)
 
 				$.getJSON(
 					url, 
 					{ 
-						option: "com_serviceorders", 
-						action: act 
+						id_order: idOrder, 
+						option: inputOption, 
+						action: inputAction 
 					},
 					function( data ) {
-						var items = [];
-						var products = data.data.products;
-						$.each( products, function( key, val ) {
-						var row = $('<li></li>');
-						var link = '<a href="#"></a>';
-						var image = '<img src="http://www.truperenlinea.com/reng/info/fichas/img/ch/' + products[key].sku + '.jpg">';
-						var h2 = '<h2>' + products[key].description + '</h2>';
-						var p = '<p>$ ' + products[key].price + ' MXN</p>';
-						link = $(link).append(image).append(h2).append(p);
-						row = $(row).append(link);
-						$('#product-list-ul').append(row);
-						// $('#product-list-ul').trigger('create');
-						$('#product-list-ul').listview('refresh');
-						});
-						
+						if ( false != data.data.order ) {
+							var items = [];
+							var order = data.data.order;
+							$('#order-data').show();
+							$("#order-id").text(order.id);
+							$("#order-folio").text(order.folio);
+							$("#order-customer").text(order.customer.fname+' '+order.customer.lname);
+							$("#order-seller").text(order.seller.fname+' '+order.seller.lname);
+							$("#order-date").text(order.date);
+							var products = order.products;
+							$.each( products, function( key, val ) {
+							var row = $('<li></li>');
+							var link = '<a href="#"></a>';
+							var image = '<img src="http://localhost:8080/joomla/media/com_serviceorders/images/' + products[key].sku + '.jpg">';
+							var h2 = '<h2>' + products[key].description + '</h2>';
+							var p = '<p>$ ' + products[key].price.toFixed(2) + '</p>';
+							link = $(link).append(image).append(h2).append(p);
+							row = $(row).append(link);
+							$('#product-list-ul').append(row);
+							// $('#product-list-ul').trigger('create');
+							$('#product-list-ul').listview('refresh');
+							});
+						}
 					});
 
 				// var posting = $.post( url, 
@@ -134,12 +154,9 @@
 		</p>
 	</div><!-- /content -->
 
-	<div id="response">das</div>
-
 	<div data-role="footer">
 		<h4>Page Footer</h4>
 	</div><!-- /footer -->
 </div><!-- /page -->
-</div>
 </body>
 </html>
